@@ -18,13 +18,8 @@
     // Event Handling
 
     this.bindEvents = function() {
-      var self = this;
-
-      forEach(self.cells, function(cell) {
-        cell.addEventListener('click', self.cellClick.bind(self));
-      });
-
-      self.button.addEventListener('click', self.playAgain.bind(self), false);
+      this.el.addEventListener(    'click', this.click.bind(this),     false);
+      this.button.addEventListener('click', this.playAgain.bind(this), false);
     };
   };
 
@@ -32,7 +27,7 @@
 
   var View = TTT.TTTView.prototype;
 
-  View.cellClick = function(event) {
+  View.click = function(event) {
     var board = this.curretBoard();
 
     if(Board.isOver(board)) { 

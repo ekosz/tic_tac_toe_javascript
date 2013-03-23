@@ -10,15 +10,14 @@ describe("TTT View", function() {
     var elementMock = {
       textContent: "", 
       style: {display: ""}, 
-      addEventListener: jasmine.createSpy(), 
-      removeEventListener: jasmine.createSpy()
+      addEventListener: jasmine.createSpy()
     };
 
     var rootElement = {getElementsByClassName: function() { return [elementMock]; }};
     view            = new TTTView(rootElement);
   });
 
-  describe("#cellClick", function() {
+  describe("#click", function() {
     beforeEach(function() {
       spyOn(view, 'curretBoard');
     });
@@ -28,7 +27,7 @@ describe("TTT View", function() {
         spyOn(TTT.Board, 'isOver').andReturn(false);
         spyOn(view,      'takeAITurn');
 
-        view.cellClick();
+        view.click();
 
         expect(view.takeAITurn).toHaveBeenCalled();
       });
@@ -47,13 +46,13 @@ describe("TTT View", function() {
       });
 
       it("displays the winner", function() {
-        view.cellClick();
+        view.click();
 
         expect(view.displayWinner).toHaveBeenCalledWith('z');
       });
 
       it("disables the cells", function() {
-        view.cellClick();
+        view.click();
 
         expect(cellViewMock.disable).toHaveBeenCalled();
       });

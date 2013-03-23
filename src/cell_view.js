@@ -14,10 +14,6 @@
     this.bindEvents = function() {
       this.el.addEventListener('click', this._clickFunction, false);
     };
-
-    this.addEventListener = function(event, cb) {
-      this.el.addEventListener(event, cb, false);
-    };
   };
 
   // Instance Methods
