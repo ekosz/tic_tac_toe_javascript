@@ -4,7 +4,7 @@ describe("TTT View", function() {
   var view;
 
   beforeEach(function() {
-    var mock = {textContent: ""};
+    var mock = {textContent: "", style: {display: ""} };
     var rootElement = {getElementsByClassName: function() { return [mock]; }};
     view = new TTTView(rootElement);
   });

@@ -9,18 +9,19 @@
   TTT.TTTView = function(rootEl) {
     this.el = rootEl;
     this.cells = this.el.getElementsByClassName('cell');
-
     this.message = this.el.getElementsByClassName('message')[0];
-    this.message.textContent = "Click any cell to start";
+    this.button = this.el.getElementsByClassName('playAgain')[0];
 
-    this.boardDisabled = false;
+    reset(this);
 
     this.bindEvents = function() {
       var self = this;
 
-      forEach(this.cells, function(cell) {
+      forEach(self.cells, function(cell) {
         cell.addEventListener('click', self.cellClick.bind(self), false);
       });
+
+      self.button.addEventListener('click', self.playAgain.bind(self), false);
     };
   };
 
@@ -41,6 +42,10 @@
     }
 
     this.takeAITurn();
+  };
+
+  View.playAgain = function(event) {
+    reset(this);
   };
 
   View.curretBoard = function() {
@@ -76,6 +81,7 @@
   View.displayWinner = function(winner) {
     var msg = winner ? "" + winner + " won!" : "Tie game.";
     this.message.textContent = "Game Over. " + msg;
+    this.button.style.display = "block";
   };
 
   // Private functions
@@ -88,4 +94,13 @@
   function async(cb) {
     setTimeout(cb, 0);
   }
+
+  function reset(view) {
+    view.message.textContent = "Click any cell to start";
+    view.boardDisabled = false;
+    view.button.style.display = "none";
+    forEach(view.cells, function(cell) {
+      cell.textContent = "";
+    });
+  };
 })();
