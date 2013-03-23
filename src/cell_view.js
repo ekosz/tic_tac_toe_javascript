@@ -48,5 +48,6 @@
 
   Cell.reset = function() {
     this.setPiece("");
+    this.disabled = false;
   };
 })();

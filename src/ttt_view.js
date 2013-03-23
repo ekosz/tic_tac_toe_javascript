@@ -15,6 +15,8 @@
 
     reset(this);
 
+    // Event Handling
+
     this.bindEvents = function() {
       var self = this;
 
@@ -54,7 +56,7 @@
   View.takeAITurn = function() {
     var self = this;
 
-    self.message.textContent = "Thinking...";
+    setMessage(self, "Thinking...");
     disableCells(self.cells);
 
     async(function() {
@@ -63,7 +65,7 @@
 
       if(Board.isOver(newBoard)) return self.displayWinner(Board.winner(newBoard));
 
-      self.message.textContent = "Your turn";
+      setMessage(self, "Your turn");
       enableCells(self.cells);
     });
   };
@@ -76,9 +78,9 @@
 
   View.displayWinner = function(winner) {
     var msg = winner ? "" + winner + " won!" : "Tie game.";
-    this.message.textContent = "Game Over. " + msg;
+    setMessage(this, "Game Over. " + msg);
 
-    this.button.style.display = "block";
+    showPlayAgainButton(this);
   };
 
   // Private functions
@@ -92,9 +94,9 @@
   }
 
   function reset(view) {
-    view.message.textContent = "Click any cell to start";
+    setMessage(view, "Click any cell to start");
 
-    view.button.style.display = "none";
+    hidePlayAgainButton(view);
 
     forEach(view.cells, function(cell) { cell.reset(); });
   }
@@ -119,5 +121,17 @@
 
   function disableCells(cells) {
     forEach(cells, function(cell) { cell.disable(); });
+  }
+
+  function setMessage(view, message) {
+    view.message.textContent = message;
+  }
+
+  function hidePlayAgainButton(view) {
+    view.button.style.display = "none";
+  }
+
+  function showPlayAgainButton(view) {
+    view.button.style.display = "block";
   }
 })();
