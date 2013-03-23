@@ -4,7 +4,7 @@
   // Constructor
 
   TTT.CellView  = function(element) {
-    this.el = element;
+    this.el       = element;
     this.disabled = false;
 
     // Event Handling
@@ -48,6 +48,5 @@
 
   Cell.reset = function() {
     this.setPiece("");
-    this.bindEvents();
   };
 })();

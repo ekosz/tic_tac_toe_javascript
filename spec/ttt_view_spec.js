@@ -13,12 +13,12 @@ describe("TTT View", function() {
       addEventListener: jasmine.createSpy(), 
       removeEventListener: jasmine.createSpy()
     };
+
     var rootElement = {getElementsByClassName: function() { return [elementMock]; }};
-    view = new TTTView(rootElement);
+    view            = new TTTView(rootElement);
   });
 
   describe("#cellClick", function() {
-
     beforeEach(function() {
       spyOn(view, 'curretBoard');
     });
@@ -26,7 +26,7 @@ describe("TTT View", function() {
     describe("when the game is not over", function() {
       it("promts the AI to take its turn", function() {
         spyOn(TTT.Board, 'isOver').andReturn(false);
-        spyOn(view, 'takeAITurn');
+        spyOn(view,      'takeAITurn');
 
         view.cellClick();
 
@@ -40,9 +40,10 @@ describe("TTT View", function() {
       beforeEach(function() {
         spyOn(TTT.Board, 'isOver').andReturn(true);
         spyOn(TTT.Board, 'winner').andReturn('z');
-        spyOn(view, 'displayWinner')
+        spyOn(view,      'displayWinner')
+
         cellViewMock = {disable: jasmine.createSpy()};
-        view.cells = [cellViewMock];
+        view.cells   = [cellViewMock];
       });
 
       it("displays the winner", function() {
@@ -61,7 +62,6 @@ describe("TTT View", function() {
 
   describe("#curretBoard", function() {
     it("contructs a board array from the current state of the view", function() {
-      var returnPiece = function(piece) { return function() { return piece; }; };
       view.cells = [mockCell('x'), mockCell(''), mockCell('o')];
 
       expect(view.curretBoard()).toEqual(['x', '', 'o']);
@@ -73,8 +73,8 @@ describe("TTT View", function() {
 
     beforeEach(function() {
       spyOn(TTT.AI, 'move');
-      spyOn(view, 'curretBoard').andReturn(board);
-      spyOn(view, 'setCurrentBoard');
+      spyOn(view,   'curretBoard').andReturn(board);
+      spyOn(view,   'setCurrentBoard');
     });
 
     it("uses AI with the curret state of the board", function() {
@@ -103,7 +103,7 @@ describe("TTT View", function() {
 
       it("disabled the board", function() {
         var cellViewMock = {disable: jasmine.createSpy()};
-        view.cells = [cellViewMock];
+        view.cells       = [cellViewMock];
 
         view.takeAITurn();
 
@@ -127,7 +127,7 @@ describe("TTT View", function() {
 
         it("enables the board", function() {
           var cellViewMock = {disable: jasmine.createSpy(), enable: jasmine.createSpy()};
-          view.cells = [cellViewMock];
+          view.cells       = [cellViewMock];
 
           runs(function() { view.takeAITurn(); });
           waits(1);
@@ -139,7 +139,7 @@ describe("TTT View", function() {
         it("displays the board's winner", function() {
           spyOn(TTT.Board, 'isOver').andReturn(true);
           spyOn(TTT.Board, 'winner').andReturn('z');
-          spyOn(view, 'displayWinner')
+          spyOn(view,      'displayWinner')
 
           runs(function() { view.takeAITurn(); });
           waits(1);
@@ -152,7 +152,7 @@ describe("TTT View", function() {
 
   describe("#setCurrentBoard", function() {
     it("sets the view's cells to the values in the board array", function() {
-      var cell = {setPiece: jasmine.createSpy()};
+      var cell   = {setPiece: jasmine.createSpy()};
       view.cells = [cell];
 
       view.setCurrentBoard(['x']);
@@ -163,8 +163,9 @@ describe("TTT View", function() {
 
   describe("#displayWinner", function() {
     var message;
+
     beforeEach(function() {
-      message = {textContent: ""};
+      message      = {textContent: ""};
       view.message = message;
     });
 

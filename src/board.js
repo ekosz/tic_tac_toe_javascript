@@ -1,6 +1,6 @@
 (function() {
   window.TTT = window.TTT || {};
-  TTT.Board = TTT.Board || {};
+  TTT.Board  = TTT.Board || {};
 
   var Board = TTT.Board;
 
@@ -14,7 +14,7 @@
 
   Board.winner = function(board) {
     return horizontalWinner(board)|| 
-           verticalWinner(board) || 
+           verticalWinner(board)  || 
            diagonalWinner(board);
   };
 
@@ -52,7 +52,7 @@
 
   function isTheSame() {
     var pieces = argumentsToArray(arguments), 
-        piece = pieces.pop();
+        piece  = pieces.pop();
 
     var isFirstPiece = function(cell) { return validPiece(cell) && cell === piece; };
     if(pieces.every(isFirstPiece)) { return piece; }

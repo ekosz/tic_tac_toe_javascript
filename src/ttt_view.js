@@ -1,17 +1,17 @@
 (function() {
   window.TTT = window.TTT || {};
 
-  var AI = TTT.AI;
-  var Board = TTT.Board;
+  var AI       = TTT.AI;
+  var Board    = TTT.Board;
   var CellView = TTT.CellView;
 
   // Contructor
 
   TTT.TTTView = function(rootEl) {
-    this.el = rootEl;
-    this.cells = cellViewsFor(this.el);
+    this.el      = rootEl;
+    this.cells   = cellViewsFor(this.el);
     this.message = this.el.getElementsByClassName('message')[0];
-    this.button = this.el.getElementsByClassName('playAgain')[0];
+    this.button  = this.el.getElementsByClassName('playAgain')[0];
 
     reset(this);
 
@@ -77,6 +77,7 @@
   View.displayWinner = function(winner) {
     var msg = winner ? "" + winner + " won!" : "Tie game.";
     this.message.textContent = "Game Over. " + msg;
+
     this.button.style.display = "block";
   };
 
@@ -84,8 +85,18 @@
 
   function cellViewsFor(element) {
     return map(element.getElementsByClassName('cell'), function(cell) {
-      return new CellView(cell);
+      var cellView = new CellView(cell);
+      cellView.bindEvents();
+      return cellView;
     });
+  }
+
+  function reset(view) {
+    view.message.textContent = "Click any cell to start";
+
+    view.button.style.display = "none";
+
+    forEach(view.cells, function(cell) { cell.reset(); });
   }
 
   function forEach(list, cb) {
@@ -100,12 +111,6 @@
 
   function async(cb) {
     setTimeout(cb, 0);
-  }
-
-  function reset(view) {
-    view.message.textContent = "Click any cell to start";
-    view.button.style.display = "none";
-    forEach(view.cells, function(cell) { cell.reset(); });
   }
 
   function enableCells(cells) {

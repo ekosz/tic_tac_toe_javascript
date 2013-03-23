@@ -1,9 +1,9 @@
 (function() {
   window.TTT = window.TTT || {};
-  TTT.AI = TTT.AI || {};
+  TTT.AI     = TTT.AI || {};
 
-  var AI = TTT.AI;
-  var Board = TTT.Board;
+  var AI      = TTT.AI;
+  var Board   = TTT.Board;
   var Minimax = TTT.Minimax;
 
   // API

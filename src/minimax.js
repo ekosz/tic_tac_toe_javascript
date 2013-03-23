@@ -1,5 +1,5 @@
 (function() {
-  window.TTT = window.TTT || {};
+  window.TTT  = window.TTT || {};
   TTT.Minimax = TTT.Minimax || {};
 
   var Minimax = TTT.Minimax,
@@ -8,18 +8,18 @@
   // API
 
   Minimax.score = function(board, toWin, currentPiece) {
-    if(Board.isOver(board)) { return currentScore(board, toWin); }
+    if(Board.isOver(board)) return currentScore(board, toWin);
 
     currentPiece = currentPiece || toWin;
 
-    var self = this,
+    var self     = this,
         children = Board.children(board, currentPiece);
 
     var scores = children.map(function(child) {
       return self.score(child, toWin, nextPiece(currentPiece));
     });
 
-    if(currentPiece === toWin) { return maxArray(scores); }
+    if(currentPiece === toWin) return maxArray(scores); 
     return minArray(scores);
   };
   

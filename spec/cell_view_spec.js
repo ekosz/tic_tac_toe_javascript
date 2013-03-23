@@ -1,10 +1,11 @@
 describe("CellView", function() {
   var CellView = TTT.CellView;
+
   var view;
 
   beforeEach(function() {
     var mockCell = {textContent: ""};
-    view = new CellView(mockCell);
+    view         = new CellView(mockCell);
   });
 
   describe("#click", function() {
@@ -20,7 +21,7 @@ describe("CellView", function() {
       var event;
 
       beforeEach(function() {
-        event = {stopPropagation: jasmine.createSpy()};
+        event   = {stopPropagation: jasmine.createSpy()};
         view.el = {textContent: 'o'};
       });
 
@@ -41,8 +42,8 @@ describe("CellView", function() {
       var event;
 
       beforeEach(function() {
-        event = {stopPropagation: jasmine.createSpy()};
-        view.el = {textContent: ''};
+        event         = {stopPropagation: jasmine.createSpy()};
+        view.el       = {textContent: ''};
         view.disabled = true;
       });
 

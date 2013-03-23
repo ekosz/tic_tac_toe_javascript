@@ -1,5 +1,6 @@
 describe("Minimax", function() {
   var Minimax = TTT.Minimax;
+
   describe(".score", function() {
     it("is 1 for a won board", function() {
       var board = ['x', 'x', 'x'];
@@ -53,7 +54,6 @@ describe("Minimax", function() {
           expect(Minimax.score(board, 'x')).toBe(1);
         });
       });
-
     });
   });
 });

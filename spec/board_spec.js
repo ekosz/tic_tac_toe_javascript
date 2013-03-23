@@ -81,7 +81,8 @@ describe("Board", function() {
     });
 
     it("returns many children when there are many spots left", function() {
-      var board = [' ', ' ', ' '],
+      var board    =  [' ', ' ', ' '],
+
           expected = [['x', ' ', ' '],
                       [' ', 'x', ' '],
                       [' ', ' ', 'x']];
