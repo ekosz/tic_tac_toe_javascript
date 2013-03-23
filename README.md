@@ -4,7 +4,7 @@ Tic-Tac-Toe Javascript
 Playing the game
 ------------
 
-Open the index.html file.  The game may not working correctly for older
+Open the index.html file.  The game may not work correctly for older
 browsers.
 
 On a Mac the command is:
