@@ -4,7 +4,8 @@ describe("TTT View", function() {
   var view;
 
   beforeEach(function() {
-    var rootElement = {getElementsByClassName: function() {}};
+    var mock = {textContent: ""};
+    var rootElement = {getElementsByClassName: function() { return [mock]; }};
     view = new TTTView(rootElement);
   });
 
@@ -17,6 +18,7 @@ describe("TTT View", function() {
         cell = {textContent: ''};
         event = {target: cell};
         spyOn(view, 'takeAITurn');
+        spyOn(TTT.Board, 'isOver').andReturn(false);
       });
 
       it("sets the cells text to 'x'", function() {
@@ -25,10 +27,24 @@ describe("TTT View", function() {
         expect(cell.textContent).toBe('x');
       });
 
-      it("promts the AI to take its turn", function() {
-        view.cellClick(event);
+      describe("when the game is not over", function() {
+        it("promts the AI to take its turn", function() {
+          view.cellClick(event);
 
-        expect(view.takeAITurn).toHaveBeenCalled();
+          expect(view.takeAITurn).toHaveBeenCalled();
+        });
+      });
+
+      describe("when the game is over", function() {
+        it("displays the winner", function() {
+          TTT.Board.isOver.andReturn(true);
+          spyOn(TTT.Board, 'winner').andReturn('z');
+          spyOn(view, 'displayWinner')
+
+          runs(function() { view.cellClick(event); });
+          waits(1);
+          runs(function() { expect(view.displayWinner).toHaveBeenCalledWith('z') });
+        });
       });
     });
 
@@ -40,6 +56,18 @@ describe("TTT View", function() {
         view.cellClick(event);
 
         expect(cell.textContent).toBe('o');
+      });
+    });
+
+    describe("when the board is disabled", function() {
+      it("does not change the cells text", function() {
+        var cell = {textContent: ''},
+            event = {target: cell};
+        view.boardDisabled = true;
+
+        view.cellClick(event);
+
+        expect(cell.textContent).toBe('');
       });
     });
   });
@@ -62,18 +90,74 @@ describe("TTT View", function() {
     });
 
     it("uses AI with the curret state of the board", function() {
-      view.takeAITurn()
+      runs(function() { view.takeAITurn(); });
+      waits(1);
+      runs(function() { expect(TTT.AI.move).toHaveBeenCalledWith(board, 'o'); });
 
-      expect(TTT.AI.move).toHaveBeenCalledWith(board, 'o');
     });
 
     it("sets the current board to the result of the AI", function() {
       TTT.AI.move.andReturn(board);
 
-      view.takeAITurn();
-
-      expect(view.setCurrentBoard).toHaveBeenCalledWith(board);
+      runs(function() { view.takeAITurn(); });
+      waits(1);
+      runs(function() { expect(view.setCurrentBoard).toHaveBeenCalledWith(board); });
     });
+
+    describe("when it starts", function() {
+      it("sets the message to 'Thinking...'", function() {
+        view.message = {textContent: ""};
+
+        view.takeAITurn();
+
+        expect(view.message.textContent).toBe("Thinking...");
+      });
+
+      it("disabled the board", function() {
+        view.boardDisabled = false;
+
+        view.takeAITurn();
+
+        expect(view.boardDisabled).toBeTruthy();
+      });
+    });
+
+    describe("when its done", function() {
+      describe("when the game is not over", function() { 
+        beforeEach(function() {
+          spyOn(TTT.Board, 'isOver').andReturn(false);
+        });
+
+        it("sets the message to 'Your turn'", function() {
+          view.message = {textContent: ""};
+
+          runs(function() { view.takeAITurn(); });
+          waits(1);
+          runs(function() { expect(view.message.textContent).toBe("Your turn") });
+        });
+
+        it("enables the board", function() {
+          view.boardDisabled = true;
+
+          runs(function() { view.takeAITurn(); });
+          waits(1);
+          runs(function() { expect(view.boardDisabled).toBeFalsy() });
+        });
+      });
+
+      describe("when the game is over", function() {
+        it("displays the board's winner", function() {
+          spyOn(TTT.Board, 'isOver').andReturn(true);
+          spyOn(TTT.Board, 'winner').andReturn('z');
+          spyOn(view, 'displayWinner')
+
+          runs(function() { view.takeAITurn(); });
+          waits(1);
+          runs(function() { expect(view.displayWinner).toHaveBeenCalledWith('z') });
+        });
+      });
+    });
+
   });
 
   describe("#setCurrentBoard", function() {
@@ -84,6 +168,26 @@ describe("TTT View", function() {
       view.setCurrentBoard(['x']);
 
       expect(cell.textContent).toBe('x');
+    });
+  });
+
+  describe("#displayWinner", function() {
+    var message;
+    beforeEach(function() {
+      message = {textContent: ""};
+      view.message = message;
+    });
+
+    it("sets the message to 'Game Over. Tie game.' when there is no winner", function() {
+      view.displayWinner(false);
+
+      expect(message.textContent).toBe('Game Over. Tie game.');
+    });
+
+    it("sets the message to 'Game Over. x won.' when x won", function() {
+      view.displayWinner('x');
+
+      expect(message.textContent).toBe('Game Over. x won!');
     });
   });
 });

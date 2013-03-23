@@ -2,12 +2,18 @@
   window.TTT = window.TTT || {};
 
   var AI = TTT.AI;
+  var Board = TTT.Board;
 
   // Contructor
 
   TTT.TTTView = function(rootEl) {
     this.el = rootEl;
     this.cells = this.el.getElementsByClassName('cell');
+
+    this.message = this.el.getElementsByClassName('message')[0];
+    this.message.textContent = "Click any cell to start";
+
+    this.boardDisabled = false;
 
     this.bindEvents = function() {
       var self = this;
@@ -24,9 +30,15 @@
 
   View.cellClick = function(event) {
     var cell = event.target;
-    if(cell.textContent !== '') return;
+    if(this.boardDisabled || cell.textContent !== '') return;
 
     cell.textContent = 'x';
+
+    var board = this.curretBoard();
+    if(Board.isOver(board)) {
+      this.boardDisabled = true;
+      return this.displayWinner(Board.winner(board));
+    }
 
     this.takeAITurn();
   };
@@ -39,7 +51,20 @@
   };
 
   View.takeAITurn = function() {
-    this.setCurrentBoard(AI.move(this.curretBoard(), 'o'));
+    var self = this;
+
+    self.message.textContent = "Thinking...";
+    self.boardDisabled = true;
+
+    async(function() {
+      var newBoard = AI.move(self.curretBoard(), 'o');
+      self.setCurrentBoard(newBoard);
+
+      if(Board.isOver(newBoard)) return self.displayWinner(Board.winner(newBoard));
+
+      self.message.textContent = "Your turn";
+      self.boardDisabled = false;
+    });
   };
 
   View.setCurrentBoard = function(board) {
@@ -48,10 +73,19 @@
     });
   };
 
+  View.displayWinner = function(winner) {
+    var msg = winner ? "" + winner + " won!" : "Tie game.";
+    this.message.textContent = "Game Over. " + msg;
+  };
+
   // Private functions
 
   function forEach(list, cb) {
     var each = Array.prototype.forEach;
     each.call(list, cb);
+  }
+
+  function async(cb) {
+    setTimeout(cb, 0);
   }
 })();
