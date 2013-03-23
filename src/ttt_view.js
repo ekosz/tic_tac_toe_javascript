@@ -3,12 +3,13 @@
 
   var AI = TTT.AI;
   var Board = TTT.Board;
+  var CellView = TTT.CellView;
 
   // Contructor
 
   TTT.TTTView = function(rootEl) {
     this.el = rootEl;
-    this.cells = this.el.getElementsByClassName('cell');
+    this.cells = cellViewsFor(this.el);
     this.message = this.el.getElementsByClassName('message')[0];
     this.button = this.el.getElementsByClassName('playAgain')[0];
 
@@ -18,7 +19,7 @@
       var self = this;
 
       forEach(self.cells, function(cell) {
-        cell.addEventListener('click', self.cellClick.bind(self), false);
+        cell.addEventListener('click', self.cellClick.bind(self));
       });
 
       self.button.addEventListener('click', self.playAgain.bind(self), false);
@@ -30,15 +31,11 @@
   var View = TTT.TTTView.prototype;
 
   View.cellClick = function(event) {
-    var cell = event.target;
-    if(this.boardDisabled || cell.textContent !== '') return;
-
-    cell.textContent = 'x';
-
     var board = this.curretBoard();
-    if(Board.isOver(board)) {
-      this.boardDisabled = true;
-      return this.displayWinner(Board.winner(board));
+
+    if(Board.isOver(board)) { 
+      disableCells(this.cells);
+      return this.displayWinner(Board.winner(board)); 
     }
 
     this.takeAITurn();
@@ -49,9 +46,8 @@
   };
 
   View.curretBoard = function() {
-    var map = Array.prototype.map;
-    return map.call(this.cells, function(cell) {
-      return cell.textContent;
+    return map(this.cells, function(cell) {
+      return cell.getPiece();
     });
   };
 
@@ -59,7 +55,7 @@
     var self = this;
 
     self.message.textContent = "Thinking...";
-    self.boardDisabled = true;
+    disableCells(self.cells);
 
     async(function() {
       var newBoard = AI.move(self.curretBoard(), 'o');
@@ -68,13 +64,13 @@
       if(Board.isOver(newBoard)) return self.displayWinner(Board.winner(newBoard));
 
       self.message.textContent = "Your turn";
-      self.boardDisabled = false;
+      enableCells(self.cells);
     });
   };
 
   View.setCurrentBoard = function(board) {
     forEach(this.cells, function(cell, index) {
-      cell.textContent = board[index];
+      cell.setPiece(board[index]);
     });
   };
 
@@ -86,9 +82,20 @@
 
   // Private functions
 
+  function cellViewsFor(element) {
+    return map(element.getElementsByClassName('cell'), function(cell) {
+      return new CellView(cell);
+    });
+  }
+
   function forEach(list, cb) {
     var each = Array.prototype.forEach;
     each.call(list, cb);
+  }
+
+  function map(list, cb) {
+    var map = Array.prototype.map;
+    return map.call(list, cb);
   }
 
   function async(cb) {
@@ -97,10 +104,15 @@
 
   function reset(view) {
     view.message.textContent = "Click any cell to start";
-    view.boardDisabled = false;
     view.button.style.display = "none";
-    forEach(view.cells, function(cell) {
-      cell.textContent = "";
-    });
-  };
+    forEach(view.cells, function(cell) { cell.reset(); });
+  }
+
+  function enableCells(cells) {
+    forEach(cells, function(cell) { cell.enable(); });
+  }
+
+  function disableCells(cells) {
+    forEach(cells, function(cell) { cell.disable(); });
+  }
 })();

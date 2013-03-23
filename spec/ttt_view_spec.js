@@ -2,79 +2,67 @@ describe("TTT View", function() {
   var TTTView = TTT.TTTView;
 
   var view;
+  var mockCell = function(piece) { 
+    return {getPiece: function() { return piece; }}; 
+  };
 
   beforeEach(function() {
-    var mock = {textContent: "", style: {display: ""} };
-    var rootElement = {getElementsByClassName: function() { return [mock]; }};
+    var elementMock = {
+      textContent: "", 
+      style: {display: ""}, 
+      addEventListener: jasmine.createSpy(), 
+      removeEventListener: jasmine.createSpy()
+    };
+    var rootElement = {getElementsByClassName: function() { return [elementMock]; }};
     view = new TTTView(rootElement);
   });
 
   describe("#cellClick", function() {
 
-    describe("when the cell is empty", function() {
-      var cell, event;
+    beforeEach(function() {
+      spyOn(view, 'curretBoard');
+    });
+
+    describe("when the game is not over", function() {
+      it("promts the AI to take its turn", function() {
+        spyOn(TTT.Board, 'isOver').andReturn(false);
+        spyOn(view, 'takeAITurn');
+
+        view.cellClick();
+
+        expect(view.takeAITurn).toHaveBeenCalled();
+      });
+    });
+
+    describe("when the game is over", function() {
+      var cellViewMock;
 
       beforeEach(function() {
-        cell = {textContent: ''};
-        event = {target: cell};
-        spyOn(view, 'takeAITurn');
-        spyOn(TTT.Board, 'isOver').andReturn(false);
+        spyOn(TTT.Board, 'isOver').andReturn(true);
+        spyOn(TTT.Board, 'winner').andReturn('z');
+        spyOn(view, 'displayWinner')
+        cellViewMock = {disable: jasmine.createSpy()};
+        view.cells = [cellViewMock];
       });
 
-      it("sets the cells text to 'x'", function() {
-        view.cellClick(event);
+      it("displays the winner", function() {
+        view.cellClick();
 
-        expect(cell.textContent).toBe('x');
+        expect(view.displayWinner).toHaveBeenCalledWith('z');
       });
 
-      describe("when the game is not over", function() {
-        it("promts the AI to take its turn", function() {
-          view.cellClick(event);
+      it("disables the cells", function() {
+        view.cellClick();
 
-          expect(view.takeAITurn).toHaveBeenCalled();
-        });
-      });
-
-      describe("when the game is over", function() {
-        it("displays the winner", function() {
-          TTT.Board.isOver.andReturn(true);
-          spyOn(TTT.Board, 'winner').andReturn('z');
-          spyOn(view, 'displayWinner')
-
-          runs(function() { view.cellClick(event); });
-          waits(1);
-          runs(function() { expect(view.displayWinner).toHaveBeenCalledWith('z') });
-        });
-      });
-    });
-
-    describe("when the cell is not empty", function() {
-      it("does not change the cells text", function() {
-        var cell = {textContent: 'o'},
-            event = {target: cell};
-
-        view.cellClick(event);
-
-        expect(cell.textContent).toBe('o');
-      });
-    });
-
-    describe("when the board is disabled", function() {
-      it("does not change the cells text", function() {
-        var cell = {textContent: ''},
-            event = {target: cell};
-        view.boardDisabled = true;
-
-        view.cellClick(event);
-
-        expect(cell.textContent).toBe('');
+        expect(cellViewMock.disable).toHaveBeenCalled();
       });
     });
   });
 
   describe("#curretBoard", function() {
     it("contructs a board array from the current state of the view", function() {
-      view.cells = [{textContent: 'x'}, {textContent: ''}, {textContent: 'o'}];
+      var returnPiece = function(piece) { return function() { return piece; }; };
+      view.cells = [mockCell('x'), mockCell(''), mockCell('o')];
 
       expect(view.curretBoard()).toEqual(['x', '', 'o']);
     });
@@ -114,11 +102,12 @@ describe("TTT View", function() {
       });
 
       it("disabled the board", function() {
-        view.boardDisabled = false;
+        var cellViewMock = {disable: jasmine.createSpy()};
+        view.cells = [cellViewMock];
 
         view.takeAITurn();
 
-        expect(view.boardDisabled).toBeTruthy();
+        expect(cellViewMock.disable).toHaveBeenCalled();
       });
     });
 
@@ -137,11 +126,12 @@ describe("TTT View", function() {
         });
 
         it("enables the board", function() {
-          view.boardDisabled = true;
+          var cellViewMock = {disable: jasmine.createSpy(), enable: jasmine.createSpy()};
+          view.cells = [cellViewMock];
 
           runs(function() { view.takeAITurn(); });
           waits(1);
-          runs(function() { expect(view.boardDisabled).toBeFalsy() });
+          runs(function() { expect(cellViewMock.enable).toHaveBeenCalled(); });
         });
       });
 
@@ -162,12 +152,12 @@ describe("TTT View", function() {
 
   describe("#setCurrentBoard", function() {
     it("sets the view's cells to the values in the board array", function() {
-      var cell = {textContent: ''};
+      var cell = {setPiece: jasmine.createSpy()};
       view.cells = [cell];
 
       view.setCurrentBoard(['x']);
 
-      expect(cell.textContent).toBe('x');
+      expect(cell.setPiece).toHaveBeenCalledWith('x');
     });
   });
 
