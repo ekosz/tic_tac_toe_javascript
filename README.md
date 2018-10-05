@@ -16,7 +16,7 @@ open index.html
 Running the tests
 --------------
 
-Open the SpecRunner.html file.  This will automatically run all of the [Jasmine](http://pivotal.github.com/jasmine/)
+Open the SpecRunner.html file.  This will automatically run all of the [Jasmine](https://jasmine.github.io/)
 specs for the project.
 
 On a mac the command is:
